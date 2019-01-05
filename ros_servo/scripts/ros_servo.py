@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 import rospy
 from geometry_msgs.msg import Twist, Vector3
 import struct
@@ -47,8 +47,7 @@ def main():
     vel_tp = [0] * 50 # 50 sample low-pass for speed
     dir_tp = [0] * 10 # 10 sample low-pass for steering
 
-    thread = threading.Thread(target=receiveSerial, args=[])
-    thread.start()
+  
 
 
 
@@ -60,7 +59,7 @@ def main():
         dir_tp[:-1] = dir_tp[1:]
 
         tx_speed = (sum(vel_tp)/len(vel_tp))*1000
-        tx_dir = (sum(dir_tp)/len(dir_tp))*1000
+        tx_dir = (sum(dir_tp)/len(dir_tp))*90000
 
         rospy.loginfo("Speed: %f", tx_speed)
         rospy.loginfo("Steering: %f", tx_dir)
@@ -72,9 +71,9 @@ def main():
         servo.set_position(0, tx_dir)
         servo.enable(0)
        
-        servo.set_velocity(0, 10000)
-        servo.set_position(0, tx_speed)
-        servo.enable(0)
+        servo.set_velocity(1, 10000)
+        servo.set_position(1, tx_speed)
+        servo.enable(1)
 
         timeout+=1
         r.sleep()
