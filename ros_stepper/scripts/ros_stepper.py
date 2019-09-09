@@ -2,12 +2,8 @@
 import rospy
 from geometry_msgs.msg import Twist, Vector3
 import struct
-from tinkerforge.ip_connection import IPConnection
-from tinkerforge.brick_silent_stepper import BrickSilentStepper
 
-HOST = "localhost"
-PORT = 4223
-UID = "XXYYZZ" # Change XXYYZZ to the UID of your Servo Brick
+
 
 
 
@@ -20,7 +16,68 @@ TIMEOUT      = 10
 MAX_SPEED    = 1 # m/s
 MAX_STEERING = 0.1 # rad/s
 
+UID_l1 = "67QG3v" # Change XXYYZZ to the UID of your Silent Stepper Brick
+UID_l2 = "62fWRx" # Change XXYYZZ to the UID of your Silent Stepper Brick
+UID_r1 = "6JJW1Y" # Change XXYYZZ to the UID of your Silent Stepper Brick
+UID_r2 = "62YAyZ" # Change XXYYZZ to the UID of your Silent Stepper Brick
+
+
 import threading
+
+
+
+class Motor_row():
+
+    def __init__(self,UID_front, UID_back, ipcon, current, max_velocity, ramping_speed ):
+    
+        self.UID_back = UID_back
+        self.UID_front = UID_front
+        # init both stepper
+        self.motor_back = BrickStepper(UID_back, ipcon)
+        self.motor_front = BrickSilentStepper(UID_front, ipcon)
+        # init current in mA
+        print(current)
+        self.motor_back.set_motor_current(current)
+        self.motor_front.set_motor_current(current)
+        # init max_velocity
+        print(max_velocity)
+        self.motor_back.set_max_velocity(max_velocity)
+        self.motor_front.set_max_velocity(max_velocity)
+        # init ramping speed
+        print(ramping_speed)
+        self.motor_back.set_speed_ramping(ramping_speed, ramping_speed)
+        self.motor_front.set_speed_ramping(ramping_speed, ramping_speed)
+
+        self.motor_back.set_step_mode(8)
+        self.motor_front.set_step_configuration(self.motor_front.STEP_RESOLUTION_8, True)
+
+    def enable_motors(self):
+        self.motor_back.enable()
+        self.motor_front.enable()    
+
+    def set_steps(self, steps):
+        print(steps)
+        self.motor_back.set_steps(steps)
+        self.motor_front.set_steps(steps)
+
+    def drive_forward(self):
+        self.motor_back.drive_forward()
+        self.motor_front.drive_forward()
+    
+
+    def drive_backward(self):
+        self.motor_back.drive_backward()
+        self.motor_front.drive_backward()
+
+    def full_stop(self):
+        self.motor_back.full_stop()
+        self.motor_front.full_stop()
+
+    def disable(self):
+        self.motor_back.disable()
+        self.motor_front.disable()
+
+
 
 
 
@@ -39,8 +96,13 @@ def main():
     rospy.init_node('ros_stepper')
 
     ipcon = IPConnection() # Create IP connection
-    servo = BrickServo(UID, ipcon) # Create device object
-    ipcon.connect(HOST, PORT)
+    current = 800
+    max_velocity = 4000
+    ramping_speed = 4000
+
+    ipcon.connect(HOST, PORT) # Connect to brickd
+    # Don't use device before ipcon is connected
+
 
     rospy.Subscriber("/cmd_vel", Twist, callback)
     r = rospy.Rate(100) # Hz

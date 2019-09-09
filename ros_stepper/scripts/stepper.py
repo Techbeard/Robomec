@@ -8,7 +8,7 @@ from tinkerforge.brick_stepper import BrickStepper
 
 class Motor_row():
 
-    def __init__(self, UID_back, UID_front, ipcon, current, max_velocity, ramping_speed ):
+    def __init__(self,UID_front, UID_back, ipcon, current, max_velocity, ramping_speed ):
     
         self.UID_back = UID_back
         self.UID_front = UID_front
@@ -16,13 +16,16 @@ class Motor_row():
         self.motor_back = BrickStepper(UID_back, ipcon)
         self.motor_front = BrickSilentStepper(UID_front, ipcon)
         # init current in mA
+        print(current)
         self.motor_back.set_motor_current(current)
         self.motor_front.set_motor_current(current)
         # init max_velocity
+        print(max_velocity)
         self.motor_back.set_max_velocity(max_velocity)
         self.motor_front.set_max_velocity(max_velocity)
         # init ramping speed
-        self.motor_back.set_speed_ramping(ramping_speed,ramping_speed)
+        print(ramping_speed)
+        self.motor_back.set_speed_ramping(ramping_speed, ramping_speed)
         self.motor_front.set_speed_ramping(ramping_speed, ramping_speed)
 
         self.motor_back.set_step_mode(8)
@@ -33,6 +36,7 @@ class Motor_row():
         self.motor_front.enable()    
 
     def set_steps(self, steps):
+        print(steps)
         self.motor_back.set_steps(steps)
         self.motor_front.set_steps(steps)
 
@@ -56,8 +60,8 @@ class Motor_row():
 if __name__ == "__main__":
     ipcon = IPConnection() # Create IP connection
     current = 800
-    max_velocity = 10000
-    ramping_speed = 10000
+    max_velocity = 4000
+    ramping_speed = 4000
 
     ipcon.connect(HOST, PORT) # Connect to brickd
     # Don't use device before ipcon is connected
@@ -68,9 +72,9 @@ if __name__ == "__main__":
     UID_r1 = "6JJW1Y" # Change XXYYZZ to the UID of your Silent Stepper Brick
     UID_r2 = "62YAyZ" # Change XXYYZZ to the UID of your Silent Stepper Brick
 
-    motor_l = Motor_row(UID_l1, UID_l2, ipcon, current, max_velocity, ramping_speed )
+    motor_l = Motor_row( UID_l1, UID_l2,  ipcon, current, max_velocity, ramping_speed )
 
-    motor_r = Motor_row( UID_r1, UID_r2, ipcon, current, max_velocity, ramping_speed)
+    motor_r = Motor_row( UID_r1, UID_r2,  ipcon, current, max_velocity, ramping_speed)
 
     motor_l.enable_motors()
     motor_r.enable_motors()
@@ -78,11 +82,11 @@ if __name__ == "__main__":
     motor_l.drive_forward()
     motor_r.drive_forward()
 
-    motor_l.set_steps(1000)
-    motor_r.set_steps(1000)
+    motor_l.set_steps(30)
+    motor_r.set_steps(30)
 
     import time 
-    time.sleep(10)
+    time.sleep(2)
 
     motor_l.disable()
     motor_r.disable()
