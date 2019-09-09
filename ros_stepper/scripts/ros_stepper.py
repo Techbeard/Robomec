@@ -4,7 +4,9 @@ from geometry_msgs.msg import Twist, Vector3
 import struct
 
 
-
+from tinkerforge.ip_connection import IPConnection
+from tinkerforge.brick_silent_stepper import BrickSilentStepper
+from tinkerforge.brick_stepper import BrickStepper
 
 
 speed = 0
@@ -28,8 +30,11 @@ import threading
 
 class Motor_row():
 
-    def __init__(self,UID_front, UID_back, ipcon, current, max_velocity, ramping_speed ):
-    
+    def __init__(self,UID_front, UID_back, ipcon, current, max_velocity, ramping_speed, side ):
+        
+        # side of the wheels r or l
+        self.side = side
+
         self.UID_back = UID_back
         self.UID_front = UID_front
         # init both stepper
@@ -56,22 +61,29 @@ class Motor_row():
         self.motor_front.enable()    
 
     def set_steps(self, steps):
-        print(steps)
+        
         self.motor_back.set_steps(steps)
         self.motor_front.set_steps(steps)
 
     def drive_forward(self):
-        self.motor_back.drive_forward()
-        self.motor_front.drive_forward()
-    
+        if self.side == 'r':
+            self.motor_back.drive_backward()
+            self.motor_front.drive_forward()
+        else:
+            self.motor_back.drive_forward()
+            self.motor_front.drive_backward()
 
     def drive_backward(self):
-        self.motor_back.drive_backward()
-        self.motor_front.drive_backward()
+        if self.side == 'l':
+            self.motor_back.drive_backward()
+            self.motor_front.drive_forward()
+        else:
+            self.motor_back.drive_forward()
+            self.motor_front.drive_backward()
 
     def full_stop(self):
-        self.motor_back.full_stop()
-        self.motor_front.full_stop()
+        self.motor_back.stop()
+        self.motor_front.stop()
 
     def disable(self):
         self.motor_back.disable()
@@ -91,6 +103,21 @@ def callback(data):
     timeout = 0
     #rospy.loginfo("Speed: %f", speed)
 
+def stepper_logic(stepper, steps):
+        
+    if abs(steps) > 1:
+
+        if steps > 0:
+            rospy.loginfo("Forward")
+            stepper.drive_forward()
+        if steps < 0:
+            rospy.loginfo("Backward")
+            stepper.drive_backward()
+        stepper.set_steps(abs(steps))
+    else:
+        stepper.full_stop()
+        rospy.loginfo("stop")
+
 def main():
     global speed, direction, timeout, ser
     rospy.init_node('ros_stepper')
@@ -100,12 +127,14 @@ def main():
     max_velocity = 4000
     ramping_speed = 4000
     motor_umfang = 0.188496
+    HOST = "localhost"
+    PORT = 4223
 
     ipcon.connect(HOST, PORT) # Connect to brickd
 
-    stepper_l = Motor_row(UID_l1, UID_r1, ipcon, current, max_velocity, ramping_speed)
+    stepper_l = Motor_row(UID_l1, UID_l2, ipcon, current, max_velocity, ramping_speed, 'l')
 
-    stepper_r = Motor_row(UID_l1, UID_r1, ipcon, current, max_velocity, ramping_speed)
+    stepper_r = Motor_row(UID_r1, UID_r2, ipcon, current, max_velocity, ramping_speed, 'r')
 
     rospy.Subscriber("/cmd_vel", Twist, callback)
     r = rospy.Rate(100) # Hz
@@ -128,34 +157,25 @@ def main():
         tx_speed = (sum(vel_tp)/len(vel_tp))
         tx_dir = (sum(dir_tp)/len(dir_tp))
 
-        rospy.loginfo("Speed: %f", tx_speed)
-        rospy.loginfo("Steering: %f", tx_dir)
+#        rospy.loginfo("Speed: %f", tx_speed)
+#        rospy.loginfo("Steering: %f", tx_dir)
 
         motorR = tx_speed + tx_dir
         motorL = tx_speed - tx_dir
 
-        rospy.loginfo("MotorR: %f", motorR)
-        rospy.loginfo("MotorL: %f", motorL)
+#        rospy.loginfo("MotorR: %f", motorR)
+#        rospy.loginfo("MotorL: %f", motorL)
         
-        steps_motor_l =  motorL / motor_umfang * 8
-        steps_motor_r =   motorR / motor_umfang * 8
+        steps_motor_l =  motorL / motor_umfang * 8 #1600
+        steps_motor_r =   motorR / motor_umfang * 8 #1600
 
         rospy.loginfo("MotorR S/s %f", steps_motor_r)
         rospy.loginfo("MotorL S/s %f", steps_motor_l)
-
-        if stepper_l > 0:
-            stepper_l.drive_forward()
-        else:
-            stepper_l.drive_backward()
         
-        
-        if stepper_r > 0:
-            stepper_r.drive_forward()
-        else:
-            stepper_r.drive_backward()
+        stepper_logic(stepper_l, steps_motor_l)
 
-        stepper_r.steps(abs(steps_motor_r))
-        stepper_l.steps(abs(steps_motor_l))
+        stepper_logic(stepper_r, steps_motor_r)
+
         timeout+=1
         r.sleep()
 
