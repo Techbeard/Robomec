@@ -99,17 +99,22 @@ def main():
     current = 800
     max_velocity = 4000
     ramping_speed = 4000
+    motor_umfang = 0.188496
 
     ipcon.connect(HOST, PORT) # Connect to brickd
-    # Don't use device before ipcon is connected
 
+    stepper_l = Motor_row(UID_l1, UID_r1, ipcon, current, max_velocity, ramping_speed)
+
+    stepper_r = Motor_row(UID_l1, UID_r1, ipcon, current, max_velocity, ramping_speed)
 
     rospy.Subscriber("/cmd_vel", Twist, callback)
     r = rospy.Rate(100) # Hz
     vel_tp = [0] * 50 # 50 sample low-pass for speed
     dir_tp = [0] * 10 # 10 sample low-pass for steering
 
-  
+    stepper_l.enable_motors()
+
+    stepper_r.enable_motors()
 
 
 
@@ -127,14 +132,34 @@ def main():
         rospy.loginfo("Steering: %f", tx_dir)
 
         motorR = tx_speed + tx_dir
-        motorL= tx_speed - tx_dir
+        motorL = tx_speed - tx_dir
 
         rospy.loginfo("MotorR: %f", motorR)
         rospy.loginfo("MotorL: %f", motorL)
         
-        
+        steps_motor_l =  motorL / motor_umfang * 8
+        steps_motor_r =   motorR / motor_umfang * 8
 
+        rospy.loginfo("MotorR S/s %f", steps_motor_r)
+        rospy.loginfo("MotorL S/s %f", steps_motor_l)
+
+        if stepper_l > 0:
+            stepper_l.drive_forward()
+        else:
+            stepper_l.drive_backward()
+        
+        
+        if stepper_r > 0:
+            stepper_r.drive_forward()
+        else:
+            stepper_r.drive_backward()
+
+        stepper_r.steps(abs(steps_motor_r))
+        stepper_l.steps(abs(steps_motor_l))
         timeout+=1
         r.sleep()
+
+    stepper_l.disable()
+    stepper_r.disable()
 
 main()
