@@ -5,8 +5,9 @@ rospy.loginfo("staring")
 from tinkerforge.bricklet_led_strip_v2 import BrickletLEDStripV2
 from tinkerforge.ip_connection import IPConnection
 
-red = [0,255,0]
-green = [0,0,255]
+red = [0,255,0]*200
+green = [0,0,255]*200
+orange = [0, 255, 187]*200
 
 HOST = "localhost"
 PORT = 4223
@@ -14,13 +15,18 @@ UID = "FRw" # Change XYZ to the UID of your LED Strip Bricklet 2.0
 
 
 def callback(data):
+    
     for entry in data.ranges:
-        if float(entry) < 0.3:
+        if entry < 0.3:
             rospy.loginfo("red")
-            ls.set_led_values(0, red*18 )
+            ls.set_led_values(0, red )
             return red
+        if entry < 0.4:
+            rospy.loginfo("orange")
+            ls.set_led_values(0, orange )
+            return orange
     rospy.loginfo("green")
-    ls.set_led_values(0, green*18 )
+    ls.set_led_values(0, green )
     return green
 
 def listener():
