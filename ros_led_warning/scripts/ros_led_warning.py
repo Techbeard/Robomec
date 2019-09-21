@@ -15,16 +15,15 @@ UID = "FRw" # Change XYZ to the UID of your LED Strip Bricklet 2.0
 
 
 def callback(data):
-    
-    for entry in data.ranges:
-        if entry < 0.3:
-            rospy.loginfo("red")
-            ls.set_led_values(0, red )
-            return red
-        if entry < 0.4:
-            rospy.loginfo("orange")
-            ls.set_led_values(0, orange )
-            return orange
+    nearest = min(data.ranges)
+    if nearest < 0.3:
+        rospy.loginfo("red")
+        ls.set_led_values(0, red )
+        return red
+    if nearest < 0.4:
+        rospy.loginfo("orange")
+        ls.set_led_values(0, orange )
+        return orange
     rospy.loginfo("green")
     ls.set_led_values(0, green )
     return green
