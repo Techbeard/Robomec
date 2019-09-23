@@ -102,7 +102,7 @@ class Motor_row():
         is_on = False
         if self.is_motor_back_on == True and self.is_motor_front_on == True:
             is_on = True 
-        return is_stepper_on
+        return is_on
 
 
 def clamp(n, minn, maxn):
@@ -129,7 +129,7 @@ def stepper_logic(stepper, steps):
                 stepper.enable_motors()
             rospy.loginfo("Backward")
             stepper.drive_backward()
-        if steps = 0:
+        if steps == 0:
             rospy.loginfo("Shutdown engie")
             stepper.disable()
         stepper.set_steps(abs(steps))
