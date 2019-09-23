@@ -124,7 +124,6 @@ def stepper_logic(stepper, steps):
             rospy.loginfo("Forward")
             stepper.drive_forward()
         if steps < 0: 
-                stepper.enable_motors()
             rospy.loginfo("Backward")
             stepper.drive_backward()
         stepper.set_steps(abs(steps))
