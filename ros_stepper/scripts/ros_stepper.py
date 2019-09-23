@@ -52,19 +52,13 @@ class Motor_row():
         print(ramping_speed)
         self.motor_back.set_speed_ramping(ramping_speed, ramping_speed)
         self.motor_front.set_speed_ramping(ramping_speed, ramping_speed)
+
         self.motor_back.set_step_mode(8)
         self.motor_front.set_step_configuration(self.motor_front.STEP_RESOLUTION_8, True)
 
-        self.is_motor_back_on = False
-        self.is_motor_front_on = False
-
     def enable_motors(self):
-
         self.motor_back.enable()
         self.motor_front.enable()    
-
-        self.is_motor_front_on = self.motor_front.is_enabled()
-        self.is_motor_back_on = self.motor_back.is_enabled()
 
     def set_steps(self, steps):
         
@@ -92,18 +86,11 @@ class Motor_row():
         self.motor_front.stop()
 
     def disable(self):
-        rospy.loginfo("stopping motor")
         self.motor_back.disable()
         self.motor_front.disable()
 
-        self.is_motor_front_on = self.motor_front.is_enabled()
-        self.is_motor_back_on = self.motor_back.is_enabled()
 
-    def is_on(self):
-        is_on = False
-        if self.is_motor_back_on == True and self.is_motor_front_on == True:
-            is_on = True 
-        return is_on
+
 
 
 def clamp(n, minn, maxn):
@@ -119,18 +106,18 @@ def callback(data):
 def stepper_logic(stepper, steps):
         
     if abs(steps) > 1:
-        rospy.loginfo(steps)
+
         if steps > 0:
             rospy.loginfo("Forward")
             stepper.drive_forward()
-        if steps < 0: 
+        if steps < 0:
             rospy.loginfo("Backward")
             stepper.drive_backward()
         stepper.set_steps(abs(steps))
     else:
         stepper.full_stop()
         rospy.loginfo("stop")
-    
+
 def main():
     global speed, direction, timeout, ser
     rospy.init_node('ros_stepper')
@@ -185,6 +172,7 @@ def main():
         rospy.loginfo("MotorR S/s %f", steps_motor_r)
         rospy.loginfo("MotorL S/s %f", steps_motor_l)
         
+        stepper_logic(stepper_l, steps_motor_l)
 
         stepper_logic(stepper_r, steps_motor_r)
 
