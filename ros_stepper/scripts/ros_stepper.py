@@ -125,7 +125,7 @@ def main():
     ipcon = IPConnection() # Create IP connection
     current = 800
     max_velocity = 4000
-    ramping_speed = 8000
+    ramping_speed = 65000
     motor_umfang = 0.188496
     HOST = "localhost"
     PORT = 4223
