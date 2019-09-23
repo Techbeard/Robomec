@@ -105,18 +105,18 @@ def callback(data):
 
 def stepper_logic(stepper, steps):
         
-    #if abs(steps) > 1:
+    if abs(steps) > 1:
 
-    if steps > 0:
-        rospy.loginfo("Forward")
-        stepper.drive_forward()
-    if steps < 0:
-        rospy.loginfo("Backward")
-        stepper.drive_backward()
-    stepper.set_steps(abs(steps))
-    #else:
-    #    stepper.full_stop()
-    #    rospy.loginfo("stop")
+        if steps > 0:
+            rospy.loginfo("Forward")
+            stepper.drive_forward()
+        if steps < 0:
+            rospy.loginfo("Backward")
+            stepper.drive_backward()
+        stepper.set_steps(abs(steps))
+    else:
+        stepper.full_stop()
+        rospy.loginfo("stop")
 
 def main():
     global speed, direction, timeout, ser
