@@ -135,6 +135,7 @@ def stepper_logic(stepper, steps):
         stepper.set_steps(abs(steps))
     else:
         stepper.full_stop()
+        stepper.disable()
         rospy.loginfo("stop")
     
 def main():
