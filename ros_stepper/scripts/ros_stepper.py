@@ -121,22 +121,16 @@ def stepper_logic(stepper, steps):
     if abs(steps) > 1:
         rospy.loginfo(steps)
         if steps > 0:
-            if stepper.is_on() == False:
                 stepper.enable_motors()
             rospy.loginfo("Forward")
             stepper.drive_forward()
         if steps < 0:
-            if stepper.is_on() == False:
                 stepper.enable_motors()
             rospy.loginfo("Backward")
             stepper.drive_backward()
-        if steps == 0:
-            rospy.loginfo("Shutdown engie")
-            stepper.disable()
         stepper.set_steps(abs(steps))
     else:
         stepper.full_stop()
-        stepper.disable()
         rospy.loginfo("stop")
     
 def main():
