@@ -69,7 +69,8 @@ class Motor_row():
         if self.side == 'r':
             self.motor_back.drive_forward()
             self.motor_front.drive_backward()
-        else:            self.motor_back.drive_backward()
+        else:
+            self.motor_back.drive_backward()
             self.motor_front.drive_forward()
 
     def drive_backward(self):
