@@ -120,12 +120,12 @@ def stepper_logic(stepper, steps):
     if abs(steps) > 1:
 
         if steps > 0:
-            if stepper.is_on() = False:
+            if stepper.is_on() == False:
                 stepper.enable_motors()
             rospy.loginfo("Forward")
             stepper.drive_forward()
         if steps < 0:
-            if stepper.is_on() = False:
+            if stepper.is_on() == False:
                 stepper.enable_motors()
             rospy.loginfo("Backward")
             stepper.drive_backward()
