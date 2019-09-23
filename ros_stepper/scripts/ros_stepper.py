@@ -89,8 +89,11 @@ class Motor_row():
         self.motor_back.disable()
         self.motor_front.disable()
 
-
-
+    def is_on(self):
+        is_stepper_on = True
+        if  self.motor_back.is_enabled() != True and self.motor_front.is_enabled() != True:
+            stepper_on = False
+        return is_stepper_on
 
 
 def clamp(n, minn, maxn):
@@ -108,16 +111,23 @@ def stepper_logic(stepper, steps):
     if abs(steps) > 1:
 
         if steps > 0:
+            if stepper.is_on() = False:
+                stepper.enable_motors()
             rospy.loginfo("Forward")
             stepper.drive_forward()
         if steps < 0:
+            if stepper.is_on() = False:
+                stepper.enable_motors()
             rospy.loginfo("Backward")
             stepper.drive_backward()
+        if steps = 0:
+            rospy.loginfo("Shutdown engie")
+            stepper.disable()
         stepper.set_steps(abs(steps))
     else:
         stepper.full_stop()
         rospy.loginfo("stop")
-
+    
 def main():
     global speed, direction, timeout, ser
     rospy.init_node('ros_stepper')
@@ -172,7 +182,6 @@ def main():
         rospy.loginfo("MotorR S/s %f", steps_motor_r)
         rospy.loginfo("MotorL S/s %f", steps_motor_l)
         
-        stepper_logic(stepper_l, steps_motor_l)
 
         stepper_logic(stepper_r, steps_motor_r)
 
