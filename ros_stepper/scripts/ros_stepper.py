@@ -92,6 +92,7 @@ class Motor_row():
         self.motor_front.stop()
 
     def disable(self):
+        rospy.loginfo("stopping motor")
         self.motor_back.disable()
         self.motor_front.disable()
 
@@ -100,9 +101,9 @@ class Motor_row():
 
     def is_on(self):
         is_on = False
-        if self.is_motor_back_on = True and self.is_motor_front_on = True:
+        if self.is_motor_back_on == True and self.is_motor_front_on == True:
             is_on = True 
-        return is_stepper_on
+        return is_on
 
 
 def clamp(n, minn, maxn):
@@ -118,23 +119,24 @@ def callback(data):
 def stepper_logic(stepper, steps):
         
     if abs(steps) > 1:
-
+        rospy.loginfo(steps)
         if steps > 0:
-            if stepper.is_on() = False:
+            if stepper.is_on() == False:
                 stepper.enable_motors()
             rospy.loginfo("Forward")
             stepper.drive_forward()
         if steps < 0:
-            if stepper.is_on() = False:
+            if stepper.is_on() == False:
                 stepper.enable_motors()
             rospy.loginfo("Backward")
             stepper.drive_backward()
-        if steps = 0:
+        if steps == 0:
             rospy.loginfo("Shutdown engie")
             stepper.disable()
         stepper.set_steps(abs(steps))
     else:
         stepper.full_stop()
+        stepper.disable()
         rospy.loginfo("stop")
     
 def main():
@@ -188,8 +190,8 @@ def main():
         steps_motor_l =  motorL / motor_umfang * 8 #1600
         steps_motor_r =   motorR / motor_umfang * 8 #1600
 
-        rospy.loginfo("MotorR S/s %f", steps_motor_r)
-        rospy.loginfo("MotorL S/s %f", steps_motor_l)
+        #rospy.loginfo("MotorR S/s %f", steps_motor_r)
+        #rospy.loginfo("MotorL S/s %f", steps_motor_l)
         
 
         stepper_logic(stepper_r, steps_motor_r)
