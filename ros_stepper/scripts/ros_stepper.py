@@ -52,13 +52,19 @@ class Motor_row():
         print(ramping_speed)
         self.motor_back.set_speed_ramping(ramping_speed, ramping_speed)
         self.motor_front.set_speed_ramping(ramping_speed, ramping_speed)
-
         self.motor_back.set_step_mode(8)
         self.motor_front.set_step_configuration(self.motor_front.STEP_RESOLUTION_8, True)
 
+        self.is_motor_back_on = False
+        self.is_motor_front_on = False
+
     def enable_motors(self):
+
         self.motor_back.enable()
         self.motor_front.enable()    
+
+        self.is_motor_front_on = self.motor_front.is_enabled()
+        self.is_motor_back_on = self.motor_back.is_enabled()
 
     def set_steps(self, steps):
         
@@ -89,10 +95,13 @@ class Motor_row():
         self.motor_back.disable()
         self.motor_front.disable()
 
+        self.is_motor_front_on = self.motor_front.is_enabled()
+        self.is_motor_back_on = self.motor_back.is_enabled()
+
     def is_on(self):
-        is_stepper_on = True
-        if  self.motor_back.is_enabled() != True and self.motor_front.is_enabled() != True:
-            stepper_on = False
+        is_on = False
+        if self.is_motor_back_on = True and self.is_motor_front_on = True:
+            is_on = True 
         return is_stepper_on
 
 
@@ -135,7 +144,7 @@ def main():
     ipcon = IPConnection() # Create IP connection
     current = 800
     max_velocity = 4000
-    ramping_speed = 4000
+    ramping_speed = 8000
     motor_umfang = 0.188496
     HOST = "localhost"
     PORT = 4223
