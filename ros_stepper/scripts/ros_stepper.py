@@ -67,11 +67,10 @@ class Motor_row():
 
     def drive_forward(self):
         if self.side == 'r':
-            self.motor_back.drive_backward()
-            self.motor_front.drive_forward()
-        else:
             self.motor_back.drive_forward()
             self.motor_front.drive_backward()
+        else:            self.motor_back.drive_backward()
+            self.motor_front.drive_forward()
 
     def drive_backward(self):
         if self.side == 'l':
@@ -125,7 +124,7 @@ def main():
     ipcon = IPConnection() # Create IP connection
     current = 800
     max_velocity = 4000
-    ramping_speed = 8000
+    ramping_speed = 65000
     motor_umfang = 0.188496
     HOST = "localhost"
     PORT = 4223
