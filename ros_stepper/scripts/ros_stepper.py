@@ -118,7 +118,7 @@ def callback(data):
 def stepper_logic(stepper, steps):
         
     if abs(steps) > 1:
-
+        rospy.loginfo(steps)
         if steps > 0:
             if stepper.is_on() == False:
                 stepper.enable_motors()
@@ -188,8 +188,8 @@ def main():
         steps_motor_l =  motorL / motor_umfang * 8 #1600
         steps_motor_r =   motorR / motor_umfang * 8 #1600
 
-        rospy.loginfo("MotorR S/s %f", steps_motor_r)
-        rospy.loginfo("MotorL S/s %f", steps_motor_l)
+        #rospy.loginfo("MotorR S/s %f", steps_motor_r)
+        #rospy.loginfo("MotorL S/s %f", steps_motor_l)
         
 
         stepper_logic(stepper_r, steps_motor_r)
