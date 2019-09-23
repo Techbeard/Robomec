@@ -166,8 +166,8 @@ def main():
 #        rospy.loginfo("MotorR: %f", motorR)
 #        rospy.loginfo("MotorL: %f", motorL)
         
-        steps_motor_l =  motorL / motor_umfang * 8 #1600
-        steps_motor_r =   motorR / motor_umfang * 8 #1600
+        steps_motor_l =  motorL / motor_umfang * 4 #1600
+        steps_motor_r =   motorR / motor_umfang * 4 #1600
 
         rospy.loginfo("MotorR S/s %f", steps_motor_r)
         rospy.loginfo("MotorL S/s %f", steps_motor_l)
