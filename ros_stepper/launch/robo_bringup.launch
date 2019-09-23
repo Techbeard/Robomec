@@ -3,7 +3,7 @@
   <arg name="set_frame_id" default="base_scan"/>
   <include file="$(find rplidar_ros)/launch/rplidar_a3.launch"/>
   <include file="$(find openni2_launch)/launch/openni2.launch"/>
-  <node pkg="ros_stepper" type="ros_stepper.py" name="driving" output="screen"> </node>
+  <node pkg="ros_led_warning" type="ros_led_warning.py" name="Led" output="screen"> </node>
   <node pkg="ros_stepper" type="ros_stepper.py" name="driving" output="screen"> </node>
 </launch>
 
