@@ -182,8 +182,8 @@ def main():
         steps_motor_l =  motorL / motor_umfang * 8 #1600
         steps_motor_r =   motorR / motor_umfang * 8 #1600
 
-        #rospy.loginfo("MotorR S/s %f", steps_motor_r)
-        #rospy.loginfo("MotorL S/s %f", steps_motor_l)
+        rospy.loginfo("MotorR S/s %f", steps_motor_r)
+        rospy.loginfo("MotorL S/s %f", steps_motor_l)
         
 
         stepper_logic(stepper_r, steps_motor_r)
