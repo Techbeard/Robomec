@@ -92,6 +92,7 @@ class Motor_row():
         self.motor_front.stop()
 
     def disable(self):
+        rospy.loginfo("stopping motor")
         self.motor_back.disable()
         self.motor_front.disable()
 
